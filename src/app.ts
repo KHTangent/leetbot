@@ -1,7 +1,7 @@
 import * as Discord from "discord.js";
 import "dotenv/config";
 import { loadConfig, isLeetMessage } from "./utils";
-import { initDB } from "./db";
+import { initDB, closeDB } from "./db";
 
 (async () => {
 	console.log("Starting leetbot...");
@@ -33,6 +33,13 @@ import { initDB } from "./db";
 				msg.channel.send("Bad leet");
 			}
 		}
+	});
+
+	process.on("SIGINT", async () => {
+		console.log("Exiting...");
+		bot.destroy();
+		await closeDB();
+		process.exit();
 	});
 
 	bot.login(config.token);

@@ -20,3 +20,8 @@ export async function initDB(config: Configuration) {
 	});
 	await db.migrate();
 }
+
+export async function closeDB() {
+	const toClose = await getDB();
+	await toClose.close();
+}
