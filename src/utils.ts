@@ -6,6 +6,7 @@ export function isLeetMessage(messageId: bigint, timezone = 0): boolean {
 export interface Configuration {
 	token: string;
 	timezone: number;
+	dbPath: string;
 }
 
 export function loadConfig(): Configuration {
@@ -17,6 +18,7 @@ export function loadConfig(): Configuration {
 	return {
 		timezone,
 		token: process.env["DISCORD_TOKEN"]!,
+		dbPath: process.env["DB_PATH"] || "data.db",
 	};
 }
 

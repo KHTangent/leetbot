@@ -1,11 +1,17 @@
 import * as Discord from "discord.js";
 import "dotenv/config";
 import { loadConfig, isLeetMessage } from "./utils";
-
-const config = loadConfig(); // Halts if a required parameter is missing
+import { initDB } from "./db";
 
 (async () => {
 	console.log("Starting leetbot...");
+
+	console.log("Loading config...");
+	const config = loadConfig(); // Halts if a required parameter is missing
+	console.log("Config loaded. Connecting to DB...");
+	await initDB(config);
+	console.log("Database connection established. Starting bot...");
+
 	const bot = new Discord.Client({
 		intents: [
 			Discord.GatewayIntentBits.Guilds,
