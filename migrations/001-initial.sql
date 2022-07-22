@@ -13,7 +13,8 @@ CREATE TABLE leetscore (
 	guildid INT NOT NULL,
 	userid INT NOT NULL,
 	score INT NOT NULL DEFAULT 0,
-	FOREIGN KEY (guildid) REFERENCES guilds(guild)
+	FOREIGN KEY (guildid) REFERENCES guilds(guild),
+	UNIQUE (guildid, userid)
 );
 
 --------------------------------------------------------------------------------
