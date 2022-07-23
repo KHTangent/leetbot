@@ -24,6 +24,8 @@ const commands = [
 		.setDescription("Gives a list of the top 10 leeters in the server"),
 ];
 
+let leetCache: Record<string, string[]> = {};
+
 (async () => {
 	console.log("Starting leetbot...");
 
@@ -54,12 +56,37 @@ const commands = [
 		console.log(`Logged in as ${bot.user?.username}`);
 	});
 
-	bot.on("messageCreate", (msg) => {
-		if (msg.content.length == 4 && msg.content.toLocaleLowerCase() === "leet") {
-			if (isLeetMessage(BigInt(msg.id), config.timezone)) {
-				msg.channel.send("Good leet");
-			} else {
-				msg.channel.send("Bad leet");
+	bot.on("messageCreate", async (msg) => {
+		if (
+			msg.content.toLocaleLowerCase() === "leet" &&
+			isLeetMessage(BigInt(msg.id), config.timezone)
+		) {
+			try {
+				const lg = await LeetGuild.fromChannelId(msg.channel.id);
+				if (!lg) {
+					return; // No leeting in that channel, despite honorary efforts
+				}
+				if (!leetCache[msg.channel.id]) {
+					// Set up a "commit leet" for when the leetable minute has passed
+					if (Object.keys(leetCache).length === 0) {
+						setTimeout(async () => {
+							for (const channel in leetCache) {
+								const lg = await LeetGuild.fromChannelId(channel);
+								if (lg) {
+									await lg.addLeets(leetCache[channel]);
+								}
+							}
+							leetCache = {};
+						}, 61 * 1000);
+					}
+					leetCache[msg.channel.id] = [];
+				}
+				if (!leetCache[msg.channel.id].includes(msg.author.id)) {
+					leetCache[msg.channel.id].push(msg.author.id);
+				}
+			} catch (e) {
+				console.error(e);
+				return;
 			}
 		}
 	});
@@ -70,7 +97,7 @@ const commands = [
 		if (interaction.commandName === "initleeting") {
 			const channel = interaction.options.getChannel("channel", true);
 			if (channel.type !== Discord.ChannelType.GuildText) {
-				await interaction.reply("Must be a text channel");
+				await interaction.reply("Channel must be a text channel");
 				return;
 			}
 			const fullChannel = await interaction.guild?.channels.fetch(channel.id);
