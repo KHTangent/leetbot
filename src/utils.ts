@@ -9,6 +9,7 @@ export function isLeetMessage(messageId: bigint, timezone: string): boolean {
 
 export interface Configuration {
 	token: string;
+	clientId: string;
 	timezone: string;
 	dbPath: string;
 }
@@ -24,11 +25,12 @@ export function loadConfig(): Configuration {
 		timezone: tz,
 		token: process.env["DISCORD_TOKEN"]!,
 		dbPath: process.env["DB_PATH"] || "data.db",
+		clientId: process.env["CLIENT_ID"]!,
 	};
 }
 
 function checkDotEnv() {
-	const required = ["DISCORD_TOKEN"];
+	const required = ["DISCORD_TOKEN", "CLIENT_ID"];
 	for (const param of required) {
 		if (!process.env[param]) {
 			console.error("Missing required environment variable: " + param);
