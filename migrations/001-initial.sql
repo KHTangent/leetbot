@@ -5,13 +5,13 @@
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE guilds (
-	id INT NOT NULL UNIQUE,
-	leetchannel INT NOT NULL
+	id TEXT NOT NULL UNIQUE,
+	leetchannel TEXT NOT NULL
 );
 
 CREATE TABLE leetscore (
-	guildid INT NOT NULL,
-	userid INT NOT NULL,
+	guildid TEXT NOT NULL,
+	userid TEXT NOT NULL,
 	score INT NOT NULL DEFAULT 0,
 	FOREIGN KEY (guildid) REFERENCES guilds(guild),
 	UNIQUE (guildid, userid)

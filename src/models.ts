@@ -9,14 +9,14 @@ export class LeetGuild {
 	/**
 	 * Guild ID
 	 */
-	id: bigint;
+	id: string;
 
 	/**
 	 * Channel to look for leets in
 	 */
-	leetChannel: bigint;
+	leetChannel: string;
 
-	private constructor(id: bigint, channel: bigint) {
+	private constructor(id: string, channel: string) {
 		this.id = id;
 		this.leetChannel = channel;
 	}
@@ -26,7 +26,7 @@ export class LeetGuild {
 	 * @param id Guild ID to search for
 	 * @returns LeetGuild if it exists, otherwise null
 	 */
-	static async fromGuildId(id: bigint): Promise<LeetGuild | null> {
+	static async fromGuildId(id: string): Promise<LeetGuild | null> {
 		const db = await getDB();
 		const row = await db.get(
 			"SELECT id, leetchannel FROM guilds WHERE id = ?",
@@ -41,7 +41,7 @@ export class LeetGuild {
 	 * @param id Channel ID to search for
 	 * @returns LeetGuild if it exists, otherwise null
 	 */
-	static async fromChannelId(id: bigint): Promise<LeetGuild | null> {
+	static async fromChannelId(id: string): Promise<LeetGuild | null> {
 		const db = await getDB();
 		const row = await db.get(
 			"SELECT id, leetchannel FROM guilds WHERE leetchannel = ?",
@@ -58,9 +58,9 @@ export class LeetGuild {
 	 * @returns LeetGuild object
 	 * @throws if unique constraint fails
 	 */
-	static async create(guild: bigint, channel: bigint): Promise<LeetGuild> {
+	static async create(guild: string, channel: string): Promise<LeetGuild> {
 		const db = await getDB();
-		await db.exec("INSERT INTO guilds(id, leetchannel) VALUES (?, ?)", [
+		await db.run("INSERT INTO guilds(id, leetchannel) VALUES (?, ?)", [
 			guild,
 			channel,
 		]);
@@ -71,9 +71,9 @@ export class LeetGuild {
 	 * Change leet channel in this guild
 	 * @param channel New channel to look for leets in
 	 */
-	async setChannel(channel: bigint): Promise<void> {
+	async setChannel(channel: string): Promise<void> {
 		const db = await getDB();
-		await db.exec("UPDATE guilds SET leetchannel = ? WHERE id = ?", [
+		await db.run("UPDATE guilds SET leetchannel = ? WHERE id = ?", [
 			channel,
 			this.id,
 		]);
@@ -84,25 +84,25 @@ export class LeetGuild {
 	 * Increment users who leeted by one
 	 * @param users Array of user IDs to increment leet score by 1 for
 	 */
-	async addLeets(users: bigint[]): Promise<void> {
+	async addLeets(users: string[]): Promise<void> {
 		const db = await getDB();
-		await db.exec("BEGIN TRANSACTION");
+		await db.run("BEGIN TRANSACTION");
 		for (const user of users) {
 			try {
-				await db.exec(
+				await db.run(
 					"INSERT OR IGNORE INTO leetscore(guildid, userid) VALUES (?, ?)",
 					[this.id, user]
 				);
-				await db.exec(
+				await db.run(
 					"UPDATE leetscore SET score = score + 1 WHERE userid = ?",
 					[user]
 				);
 			} catch (e) {
-				await db.exec("ROLLBACK");
+				await db.run("ROLLBACK");
 				return;
 			}
 		}
-		await db.exec("COMMIT");
+		await db.run("COMMIT");
 	}
 
 	/**
@@ -129,7 +129,7 @@ export class LeetGuild {
 	 */
 	async destroy(): Promise<void> {
 		const db = await getDB();
-		await db.exec("DELETE FROM leetscore WHERE guildid", [this.id]);
-		await db.exec("DELETE FROM guilds WHERE id = ?", [this.id]);
+		await db.run("DELETE FROM leetscore WHERE guildid", [this.id]);
+		await db.run("DELETE FROM guilds WHERE id = ?", [this.id]);
 	}
 }
