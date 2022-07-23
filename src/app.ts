@@ -26,7 +26,7 @@ import { initDB, closeDB } from "./db";
 	});
 
 	bot.on("messageCreate", (msg) => {
-		if (msg.content === "leet") {
+		if (msg.content.length == 4 && msg.content.toLocaleLowerCase() === "leet") {
 			if (isLeetMessage(BigInt(msg.id), config.timezone)) {
 				msg.channel.send("Good leet");
 			} else {
