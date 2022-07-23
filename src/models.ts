@@ -1,7 +1,7 @@
 import { getDB } from "./db";
 
 interface LeetScore {
-	userId: bigint;
+	userId: string;
 	score: number;
 }
 

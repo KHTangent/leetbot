@@ -115,7 +115,37 @@ let leetCache: Record<string, string[]> = {};
 				);
 			}
 		} else if (interaction.commandName === "leeterboard") {
-			await interaction.reply("Not implemented yet");
+			const lg = await LeetGuild.fromGuildId(interaction.guild!.id);
+			if (!lg) {
+				await interaction.reply("Leeting is not enabled in this server");
+				return;
+			}
+			const top10 = await lg.getHighscores(10);
+			if (top10.length === 0) {
+				await interaction.reply("Nobody has leeted in this server yet :(");
+				return;
+			}
+			const embed = new Discord.EmbedBuilder()
+				.setTitle(`Best leeters in **${interaction.guild!.name}**`)
+				.setColor(0x0078d7)
+				.addFields(
+					{
+						name: "Scores",
+						value: top10.map((e) => `<@${e.userId}>: ${e.score}`).join("\n"),
+					},
+					{
+						name: "Want to leet?",
+						value:
+							`Send a message containing only the word "leet" in <#${lg.leetChannel}> ` +
+							`at exactly 13:37 to earn a point! (timezone: ${config.timezone})`,
+					}
+				);
+			await interaction.reply({
+				embeds: [embed],
+				allowedMentions: {
+					users: [],
+				},
+			});
 		} else {
 			await interaction.reply("Command not found");
 		}
