@@ -47,7 +47,6 @@ let leetCache: Record<string, string[]> = {};
 		intents: [
 			Discord.GatewayIntentBits.Guilds,
 			Discord.GatewayIntentBits.GuildMessages,
-			Discord.GatewayIntentBits.DirectMessages,
 			Discord.GatewayIntentBits.MessageContent,
 		],
 	});
