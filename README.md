@@ -1,5 +1,7 @@
 # Leetbot
 
+Bot to keep track of the best leeters in DIGGiLOUNGE. Was never put into use, as they ended up creating their own a few months after this one. 
+
 ## Setup guide
 
 First, install a recent version of Node.js. I recommend using [NVM-sh](https://github.com/nvm-sh/nvm) for this on Linux. It's probably useful to install `git` as well, but it is not required.
